@@ -24,3 +24,45 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom animations for drawing canvas */
+@keyframes drawingPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.drawing-active {
+  animation: drawingPulse 0.5s ease-in-out;
+}
+
+/* Smooth transitions for canvas interactions */
+.canvas-container {
+  transition: box-shadow 0.3s ease;
+}
+
+.canvas-container:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* User cursor animations */
+@keyframes cursorBounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-4px); }
+  60% { transform: translateY(-2px); }
+}
+
+.cursor-bounce {
+  animation: cursorBounce 1s ease-in-out;
+}
+
+/* Connection status indicator */
+@keyframes connectionPulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.connection-pulse {
+  animation: connectionPulse 2s ease-in-out infinite;
+}
+
