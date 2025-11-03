@@ -1,104 +1,178 @@
-import Image from "next/image";
-import Link from "next/link";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+
+interface SuccessMessage {
+  id: number;
+  message: string;
+  timestamp: Date;
+}
+
+export default function SystemMessagePOC() {
+  const [messages, setMessages] = useState<SuccessMessage[]>([]);
+  const [nextId, setNextId] = useState(1);
+
+  const addSuccessMessage = (message: string) => {
+    const newMessage: SuccessMessage = {
+      id: nextId,
+      message,
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, newMessage]);
+    setNextId(prev => prev + 1);
+  };
+
+  const dismissMessage = (id: number) => {
+    setMessages(prev => prev.filter(msg => msg.id !== id));
+  };
+
+  const predefinedMessages = [
+    "Operation completed successfully!",
+    "Data saved successfully!",
+    "User profile updated!",
+    "File uploaded successfully!",
+    "Settings saved!",
+    "Email sent successfully!",
+    "Payment processed successfully!",
+    "Account created successfully!"
+  ];
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <Link
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </Link>
-          <Link
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </Link>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            System Message POC
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Proof of concept for displaying success messages
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <Link
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </Link>
-        <Link
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </Link>
-        <Link
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </Link>
-      </footer>
+
+        {/* Message Container - Fixed position for notifications */}
+        <div className="fixed top-4 right-4 z-50 space-y-2 w-80">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 shadow-lg animate-in slide-in-from-right duration-300"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-start space-x-3">
+                  {/* Success Icon */}
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="w-5 h-5 text-green-600 dark:text-green-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                      {msg.message}
+                    </p>
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                      {msg.timestamp.toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+                {/* Dismiss Button */}
+                <button
+                  onClick={() => dismissMessage(msg.id)}
+                  className="flex-shrink-0 ml-2 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Control Panel */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            Test Success Messages
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {predefinedMessages.map((message, index) => (
+              <button
+                key={index}
+                onClick={() => addSuccessMessage(message)}
+                className="text-left p-3 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg transition-colors"
+              >
+                <span className="text-sm text-green-800 dark:text-green-200">
+                  {message}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Message History */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            Message History
+          </h2>
+          
+          {messages.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+              No messages yet. Click a button above to test success messages.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                >
+                  <div className="flex items-center space-x-3">
+                    <svg
+                      className="w-4 h-4 text-green-600 dark:text-green-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-sm text-gray-900 dark:text-white">
+                      {msg.message}
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {msg.timestamp.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {messages.length > 0 && (
+            <button
+              onClick={() => setMessages([])}
+              className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
+            >
+              Clear All Messages
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
+
