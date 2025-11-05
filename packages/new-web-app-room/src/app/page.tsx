@@ -1,212 +1,108 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
-export default function Calculator() {
-  const [display, setDisplay] = useState('0');
-  const [previousValue, setPreviousValue] = useState<number | null>(null);
-  const [operation, setOperation] = useState<string | null>(null);
-  const [waitingForOperand, setWaitingForOperand] = useState(false);
+export default function CowEmojiApp() {
+  const [isPressed, setIsPressed] = useState(false);
+  const [mooCount, setMooCount] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const inputNumber = (num: string) => {
-    if (waitingForOperand) {
-      setDisplay(num);
-      setWaitingForOperand(false);
-    } else {
-      setDisplay(display === '0' ? num : display + num);
+  const playMoo = () => {
+    // Create audio context for the "moo" sound effect
+    if (typeof window !== 'undefined') {
+      try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Create a "moo" sound with frequency modulation
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.5);
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.8);
+      } catch (error) {
+        console.log('Audio not supported');
+      }
     }
   };
 
-  const inputOperation = (nextOperation: string) => {
-    const inputValue = parseFloat(display);
-
-    if (previousValue === null) {
-      setPreviousValue(inputValue);
-    } else if (operation) {
-      const currentValue = previousValue || 0;
-      const newValue = calculate(currentValue, inputValue, operation);
-
-      setDisplay(String(newValue));
-      setPreviousValue(newValue);
-    }
-
-    setWaitingForOperand(true);
-    setOperation(nextOperation);
-  };
-
-  const calculate = (firstValue: number, secondValue: number, operation: string) => {
-    switch (operation) {
-      case '+':
-        return firstValue + secondValue;
-      case '-':
-        return firstValue - secondValue;
-      case '×':
-        return firstValue * secondValue;
-      case '÷':
-        return firstValue / secondValue;
-      case '=':
-        return secondValue;
-      default:
-        return secondValue;
-    }
-  };
-
-  const performCalculation = () => {
-    const inputValue = parseFloat(display);
-
-    if (previousValue !== null && operation) {
-      const newValue = calculate(previousValue, inputValue, operation);
-      setDisplay(String(newValue));
-      setPreviousValue(null);
-      setOperation(null);
-      setWaitingForOperand(true);
-    }
-  };
-
-  const clear = () => {
-    setDisplay('0');
-    setPreviousValue(null);
-    setOperation(null);
-    setWaitingForOperand(false);
-  };
-
-  const inputDecimal = () => {
-    if (waitingForOperand) {
-      setDisplay('0.');
-      setWaitingForOperand(false);
-    } else if (display.indexOf('.') === -1) {
-      setDisplay(display + '.');
-    }
+  const handleCowTap = () => {
+    setIsPressed(true);
+    setMooCount(prev => prev + 1);
+    playMoo();
+    
+    // Reset the pressed state after animation
+    setTimeout(() => setIsPressed(false), 150);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Calculator</h1>
+    <div className="min-h-screen bg-gradient-to-b from-green-200 to-green-400 flex flex-col items-center justify-center p-4">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-green-800 mb-2">🐄 Cow Tap App 🐄</h1>
+        <p className="text-green-700 text-lg">Tap the cow to hear it moo!</p>
+      </div>
+
+      {/* Cow Emoji Button */}
+      <div className="relative">
+        <button
+          onClick={handleCowTap}
+          className={`
+            text-9xl transition-all duration-150 ease-in-out
+            hover:scale-110 active:scale-95 
+            ${isPressed ? 'scale-95' : 'scale-100'}
+            bg-white rounded-full p-8 shadow-2xl
+            border-4 border-green-300 hover:border-green-400
+            transform hover:rotate-2 active:rotate-0
+          `}
+          style={{
+            filter: isPressed ? 'brightness(1.2)' : 'brightness(1)',
+          }}
+        >
+          🐄
+        </button>
         
-        {/* Display */}
-        <div className="bg-gray-900 rounded-lg p-4 mb-4">
-          <div className="text-right text-white text-3xl font-mono overflow-hidden">
-            {display}
+        {/* Moo text animation */}
+        {isPressed && (
+          <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <span className="text-4xl font-bold text-green-800 bg-white px-4 py-2 rounded-full shadow-lg border-2 border-green-300">
+              MOOO! 🗣️
+            </span>
           </div>
+        )}
+      </div>
+
+      {/* Moo Counter */}
+      <div className="mt-12 text-center">
+        <div className="bg-white rounded-2xl shadow-xl p-6 border-4 border-green-300">
+          <h2 className="text-2xl font-bold text-green-800 mb-2">Moo Counter</h2>
+          <div className="text-6xl font-bold text-green-600">{mooCount}</div>
+          <p className="text-green-700 mt-2">
+            {mooCount === 0 && "Tap the cow to start!"}
+            {mooCount === 1 && "First moo! 🎉"}
+            {mooCount > 1 && mooCount < 10 && "Keep going! 🐄"}
+            {mooCount >= 10 && mooCount < 50 && "Wow, that's a lot of moos! 🤩"}
+            {mooCount >= 50 && "Moo master! 🏆"}
+          </p>
         </div>
+      </div>
 
-        {/* Button Grid */}
-        <div className="grid grid-cols-4 gap-3">
-          {/* Row 1 */}
-          <button
-            onClick={clear}
-            className="col-span-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            Clear
-          </button>
-          <button
-            onClick={() => inputOperation('÷')}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            ÷
-          </button>
-          <button
-            onClick={() => inputOperation('×')}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            ×
-          </button>
-
-          {/* Row 2 */}
-          <button
-            onClick={() => inputNumber('7')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            7
-          </button>
-          <button
-            onClick={() => inputNumber('8')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            8
-          </button>
-          <button
-            onClick={() => inputNumber('9')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            9
-          </button>
-          <button
-            onClick={() => inputOperation('-')}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            -
-          </button>
-
-          {/* Row 3 */}
-          <button
-            onClick={() => inputNumber('4')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            4
-          </button>
-          <button
-            onClick={() => inputNumber('5')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            5
-          </button>
-          <button
-            onClick={() => inputNumber('6')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            6
-          </button>
-          <button
-            onClick={() => inputOperation('+')}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            +
-          </button>
-
-          {/* Row 4 */}
-          <button
-            onClick={() => inputNumber('1')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            1
-          </button>
-          <button
-            onClick={() => inputNumber('2')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            2
-          </button>
-          <button
-            onClick={() => inputNumber('3')}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            3
-          </button>
-          <button
-            onClick={performCalculation}
-            className="row-span-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            =
-          </button>
-
-          {/* Row 5 */}
-          <button
-            onClick={() => inputNumber('0')}
-            className="col-span-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            0
-          </button>
-          <button
-            onClick={inputDecimal}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-4 rounded-lg transition-colors"
-          >
-            .
-          </button>
-        </div>
+      {/* Fun facts */}
+      <div className="mt-8 text-center max-w-md">
+        <p className="text-green-800 text-sm opacity-75">
+          🌱 Fun fact: Cows say different things in different languages! 
+          In English it's "moo", in French it's "meuh", and in Japanese it's "mō"!
+        </p>
       </div>
     </div>
   );
 }
+
+
 
