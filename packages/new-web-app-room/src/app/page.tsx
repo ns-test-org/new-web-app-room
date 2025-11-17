@@ -1,5 +1,6 @@
-import TodoList from '@/components/TodoList';
+import SnakeGame from '@/components/SnakeGame';
 
 export default function Home() {
-  return <TodoList />;
+  return <SnakeGame />;
 }
+
