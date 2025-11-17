@@ -103,7 +103,7 @@ export default function SnakeGame() {
   }, [direction, gameStarted, gameOver]);
 
   useEffect(() => {
-    const gameInterval = setInterval(moveSnake, 150);
+    const gameInterval = setInterval(moveSnake, 100);
     return () => clearInterval(gameInterval);
   }, [moveSnake]);
 
@@ -181,4 +181,5 @@ export default function SnakeGame() {
     </div>
   );
 }
+
 
