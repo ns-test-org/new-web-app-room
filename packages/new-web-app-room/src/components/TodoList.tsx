@@ -104,19 +104,19 @@ export default function TodoList() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode ? 'dark bg-gray-900' : 'bg-gray-50'
+      darkMode ? 'dark bg-gray-900' : 'bg-blue-50'
     }`}>
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className={`text-3xl font-bold ${
-              darkMode ? 'text-white' : 'text-gray-900'
+              darkMode ? 'text-white' : 'text-blue-900'
             }`}>
               Todo List
             </h1>
             <p className={`text-sm mt-1 ${
-              darkMode ? 'text-gray-400' : 'text-gray-600'
+              darkMode ? 'text-gray-400' : 'text-blue-600'
             }`}>
               {totalCount > 0 ? `${completedCount} of ${totalCount} completed` : 'No todos yet'}
             </p>
@@ -128,7 +128,7 @@ export default function TodoList() {
             className={`p-3 rounded-full transition-colors duration-200 ${
               darkMode 
                 ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' 
-                : 'bg-white text-gray-600 hover:bg-gray-100 shadow-md'
+                : 'bg-blue-100 text-blue-600 hover:bg-blue-200 shadow-md'
             }`}
             aria-label="Toggle dark mode"
           >
@@ -138,7 +138,7 @@ export default function TodoList() {
 
         {/* Add Todo Form */}
         <div className={`rounded-lg p-4 mb-6 ${
-          darkMode ? 'bg-gray-800' : 'bg-white shadow-md'
+          darkMode ? 'bg-gray-800' : 'bg-blue-100 shadow-md border border-blue-200'
         }`}>
           <div className="flex gap-3">
             <input
@@ -150,7 +150,7 @@ export default function TodoList() {
               className={`flex-1 px-4 py-3 rounded-lg border transition-colors duration-200 ${
                 darkMode 
                   ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500' 
-                  : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-500 focus:border-blue-500'
+                  : 'bg-white border-blue-300 text-blue-900 placeholder-blue-400 focus:border-blue-500'
               } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20`}
             />
             <button
@@ -168,7 +168,7 @@ export default function TodoList() {
         <div className="space-y-3">
           {todos.length === 0 ? (
             <div className={`text-center py-12 ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
+              darkMode ? 'text-gray-400' : 'text-blue-500'
             }`}>
               <div className="text-4xl mb-4">📝</div>
               <p className="text-lg">No todos yet!</p>
@@ -179,7 +179,7 @@ export default function TodoList() {
               <div
                 key={todo.id}
                 className={`rounded-lg p-4 transition-all duration-200 ${
-                  darkMode ? 'bg-gray-800' : 'bg-white shadow-md'
+                  darkMode ? 'bg-gray-800' : 'bg-blue-50 shadow-md border border-blue-200'
                 } ${todo.completed ? 'opacity-75' : ''}`}
               >
                 <div className="flex items-center gap-3">
@@ -191,7 +191,7 @@ export default function TodoList() {
                         ? 'bg-green-500 border-green-500 text-white'
                         : darkMode
                         ? 'border-gray-600 hover:border-green-500'
-                        : 'border-gray-300 hover:border-green-500'
+                        : 'border-blue-300 hover:border-green-500'
                     }`}
                   >
                     {todo.completed && <Check size={14} />}
@@ -209,7 +209,7 @@ export default function TodoList() {
                           className={`flex-1 px-3 py-2 rounded border transition-colors duration-200 ${
                             darkMode 
                               ? 'bg-gray-700 border-gray-600 text-white' 
-                              : 'bg-gray-50 border-gray-200 text-gray-900'
+                              : 'bg-white border-blue-300 text-blue-900'
                           } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20`}
                           autoFocus
                         />
@@ -231,8 +231,8 @@ export default function TodoList() {
                         <span
                           className={`${
                             todo.completed 
-                              ? `line-through ${darkMode ? 'text-gray-500' : 'text-gray-400'}` 
-                              : darkMode ? 'text-white' : 'text-gray-900'
+                              ? `line-through ${darkMode ? 'text-gray-500' : 'text-blue-400'}` 
+                              : darkMode ? 'text-white' : 'text-blue-900'
                           }`}
                         >
                           {todo.text}
@@ -243,7 +243,7 @@ export default function TodoList() {
                             className={`p-2 rounded transition-colors duration-200 ${
                               darkMode 
                                 ? 'text-gray-400 hover:text-blue-400 hover:bg-gray-700' 
-                                : 'text-gray-500 hover:text-blue-600 hover:bg-gray-100'
+                                : 'text-blue-500 hover:text-blue-600 hover:bg-blue-100'
                             }`}
                           >
                             <Edit2 size={16} />
@@ -253,7 +253,7 @@ export default function TodoList() {
                             className={`p-2 rounded transition-colors duration-200 ${
                               darkMode 
                                 ? 'text-gray-400 hover:text-red-400 hover:bg-gray-700' 
-                                : 'text-gray-500 hover:text-red-600 hover:bg-gray-100'
+                                : 'text-blue-500 hover:text-red-600 hover:bg-blue-100'
                             }`}
                           >
                             <Trash2 size={16} />
@@ -284,3 +284,16 @@ export default function TodoList() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
