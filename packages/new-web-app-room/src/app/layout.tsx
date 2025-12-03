@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "coops app",
-  description: "A powerful calculator app for all your math needs",
-  keywords: ["calculator", "math", "arithmetic", "computation", "numbers", "addition", "subtraction", "multiplication", "division", "scientific calculator"],
+  title: "Coops Todo List",
+  description: "A powerful todo list app for organizing your tasks",
+  keywords: ["todo", "tasks", "productivity", "organization", "checklist", "planning", "task management"],
 };
 
 export default function RootLayout({
@@ -33,5 +33,6 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 

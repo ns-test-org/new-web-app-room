@@ -341,7 +341,7 @@ export default function TodoList() {
             <h1 className={`text-3xl font-bold transition-colors duration-300 ${
               darkMode ? 'text-white drop-shadow-lg' : 'text-blue-900'
             }`}>
-              Todo List
+              Coops Todo List
             </h1>
             <p className={`text-sm mt-1 transition-colors duration-300 ${
               darkMode ? 'text-gray-300' : 'text-blue-600'
@@ -519,6 +519,7 @@ export default function TodoList() {
     </div>
   );
 }
+
 
 
 
