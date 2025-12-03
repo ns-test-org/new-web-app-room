@@ -16,6 +16,7 @@ export default function TodoList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
   const [darkMode, setDarkMode] = useState(false);
+  const [showThemeNotification, setShowThemeNotification] = useState(false);
 
   // Load todos and theme from localStorage on mount
   useEffect(() => {
@@ -30,8 +31,13 @@ export default function TodoList() {
       setTodos(parsedTodos);
     }
     
-    if (savedTheme) {
+    // Initialize dark mode based on saved preference or system preference
+    if (savedTheme !== null) {
       setDarkMode(JSON.parse(savedTheme));
+    } else {
+      // Check system preference if no saved preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setDarkMode(prefersDark);
     }
   }, []);
 
@@ -49,6 +55,22 @@ export default function TodoList() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Add keyboard shortcut for dark mode toggle (Ctrl/Cmd + D)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        setDarkMode(prev => !prev);
+        // Show notification for keyboard shortcut usage
+        setShowThemeNotification(true);
+        setTimeout(() => setShowThemeNotification(false), 2000);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const addTodo = () => {
     if (newTodo.trim()) {
@@ -103,20 +125,36 @@ export default function TodoList() {
   const totalCount = todos.length;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode ? 'dark bg-gray-900' : 'bg-blue-50'
+    <div className={`min-h-screen transition-all duration-500 ease-in-out ${
+      darkMode ? 'dark bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-blue-50 to-indigo-100'
     }`}>
+      {/* Theme Change Notification */}
+      {showThemeNotification && (
+        <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg transition-all duration-300 animate-pulse ${
+          darkMode 
+            ? 'bg-gray-800 text-white border border-gray-700' 
+            : 'bg-white text-gray-900 border border-gray-200'
+        }`}>
+          <div className="flex items-center gap-2">
+            {darkMode ? <Moon size={16} /> : <Sun size={16} />}
+            <span className="text-sm font-medium">
+              Switched to {darkMode ? 'dark' : 'light'} mode
+            </span>
+          </div>
+        </div>
+      )}
+      
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className={`text-3xl font-bold ${
-              darkMode ? 'text-white' : 'text-blue-900'
+            <h1 className={`text-3xl font-bold transition-colors duration-300 ${
+              darkMode ? 'text-white drop-shadow-lg' : 'text-blue-900'
             }`}>
               Todo List
             </h1>
-            <p className={`text-sm mt-1 ${
-              darkMode ? 'text-gray-400' : 'text-blue-600'
+            <p className={`text-sm mt-1 transition-colors duration-300 ${
+              darkMode ? 'text-gray-300' : 'text-blue-600'
             }`}>
               {totalCount > 0 ? `${completedCount} of ${totalCount} completed` : 'No todos yet'}
             </p>
@@ -125,14 +163,21 @@ export default function TodoList() {
           {/* Dark Mode Toggle */}
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className={`p-3 rounded-full transition-colors duration-200 ${
+            className={`relative p-3 rounded-full transition-all duration-300 transform hover:scale-105 ${
               darkMode 
-                ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' 
-                : 'bg-blue-100 text-blue-600 hover:bg-blue-200 shadow-md'
+                ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 shadow-lg' 
+                : 'bg-blue-100 text-blue-600 hover:bg-blue-200 shadow-md hover:shadow-lg'
             }`}
-            aria-label="Toggle dark mode"
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={`${darkMode ? 'Switch to light mode' : 'Switch to dark mode'} (Ctrl+D)`}
           >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            <div className="relative">
+              {darkMode ? (
+                <Sun size={20} className="animate-pulse" />
+              ) : (
+                <Moon size={20} className="animate-pulse" />
+              )}
+            </div>
           </button>
         </div>
 
@@ -284,6 +329,15 @@ export default function TodoList() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
 
 
 
