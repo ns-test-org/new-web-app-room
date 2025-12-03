@@ -1,13 +1,182 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Moon, Sun, Plus, Edit2, Trash2, Check, X } from 'lucide-react';
+import { Moon, Sun, Plus, Edit2, Trash2, Check, X, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Todo {
   id: string;
   text: string;
   completed: boolean;
   createdAt: Date;
+}
+
+interface SortableItemProps {
+  todo: Todo;
+  darkMode: boolean;
+  editingId: string | null;
+  editText: string;
+  onToggleComplete: (id: string) => void;
+  onStartEdit: (id: string, text: string) => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+  onDelete: (id: string) => void;
+  onEditTextChange: (text: string) => void;
+  onKeyPress: (e: React.KeyboardEvent, action: () => void) => void;
+}
+
+function SortableItem({
+  todo,
+  darkMode,
+  editingId,
+  editText,
+  onToggleComplete,
+  onStartEdit,
+  onSaveEdit,
+  onCancelEdit,
+  onDelete,
+  onEditTextChange,
+  onKeyPress,
+}: SortableItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: todo.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`rounded-lg p-4 transition-all duration-200 ${
+        darkMode ? 'bg-gray-800' : 'bg-blue-50 shadow-md border border-blue-200'
+      } ${todo.completed ? 'opacity-75' : ''} ${
+        isDragging ? 'opacity-50 scale-105 shadow-lg z-50' : ''
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        {/* Drag Handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className={`cursor-grab active:cursor-grabbing p-1 rounded transition-colors duration-200 ${
+            darkMode 
+              ? 'text-gray-500 hover:text-gray-300 hover:bg-gray-700' 
+              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-200'
+          }`}
+          title="Drag to reorder"
+        >
+          <GripVertical size={16} />
+        </div>
+
+        {/* Complete Toggle */}
+        <button
+          onClick={() => onToggleComplete(todo.id)}
+          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors duration-200 ${
+            todo.completed
+              ? 'bg-green-500 border-green-500 text-white'
+              : darkMode
+              ? 'border-gray-600 hover:border-green-500'
+              : 'border-blue-300 hover:border-green-500'
+          }`}
+        >
+          {todo.completed && <Check size={14} />}
+        </button>
+
+        {/* Todo Text */}
+        <div className="flex-1">
+          {editingId === todo.id ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={editText}
+                onChange={(e) => onEditTextChange(e.target.value)}
+                onKeyPress={(e) => onKeyPress(e, onSaveEdit)}
+                className={`flex-1 px-3 py-2 rounded border transition-colors duration-200 ${
+                  darkMode 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-blue-300 text-blue-900'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-20`}
+                autoFocus
+              />
+              <button
+                onClick={onSaveEdit}
+                className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900 rounded transition-colors duration-200"
+              >
+                <Check size={16} />
+              </button>
+              <button
+                onClick={onCancelEdit}
+                className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded transition-colors duration-200"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <span
+                className={`${
+                  todo.completed 
+                    ? `line-through ${darkMode ? 'text-gray-500' : 'text-blue-400'}` 
+                    : darkMode ? 'text-white' : 'text-blue-900'
+                }`}
+              >
+                {todo.text}
+              </span>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => onStartEdit(todo.id, todo.text)}
+                  className={`p-2 rounded transition-colors duration-200 ${
+                    darkMode 
+                      ? 'text-gray-400 hover:text-blue-400 hover:bg-gray-700' 
+                      : 'text-blue-500 hover:text-blue-600 hover:bg-blue-100'
+                  }`}
+                >
+                  <Edit2 size={16} />
+                </button>
+                <button
+                  onClick={() => onDelete(todo.id)}
+                  className={`p-2 rounded transition-colors duration-200 ${
+                    darkMode 
+                      ? 'text-gray-400 hover:text-red-400 hover:bg-gray-700' 
+                      : 'text-blue-500 hover:text-red-600 hover:bg-blue-100'
+                  }`}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function TodoList() {
@@ -17,6 +186,14 @@ export default function TodoList() {
   const [editText, setEditText] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const [showThemeNotification, setShowThemeNotification] = useState(false);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Load todos and theme from localStorage on mount
   useEffect(() => {
@@ -118,6 +295,19 @@ export default function TodoList() {
   const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
     if (e.key === 'Enter') {
       action();
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      setTodos((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over?.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
     }
   };
 
@@ -329,6 +519,10 @@ export default function TodoList() {
     </div>
   );
 }
+
+
+
+
 
 
 
