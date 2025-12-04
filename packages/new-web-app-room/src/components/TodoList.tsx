@@ -503,22 +503,12 @@ export default function TodoList() {
           )}
         </div>
 
-        {/* Footer Stats */}
-        {todos.length > 0 && (
-          <div className={`mt-8 text-center text-sm ${
-            darkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            <div className="flex justify-center gap-6">
-              <span>Total: {totalCount}</span>
-              <span>Completed: {completedCount}</span>
-              <span>Remaining: {totalCount - completedCount}</span>
-            </div>
-          </div>
-        )}
+
       </div>
     </div>
   );
 }
+
 
 
 
