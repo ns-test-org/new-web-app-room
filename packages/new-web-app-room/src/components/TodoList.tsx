@@ -1,8 +1,10 @@
+'use client';
+
 import React, { useState, FormEvent } from 'react';
 
 type Todo = { id: string; text: string; completed: boolean; };
 
-export default function TodoList(): JSX.Element {
+export default function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([
     { id: 't1', text: 'Sample task 1', completed: false },
     { id: 't2', text: 'Sample task 2', completed: false }
