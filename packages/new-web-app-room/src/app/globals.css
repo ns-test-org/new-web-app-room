@@ -37,5 +37,20 @@ body {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
+/* Animated grid background */
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 20px; }
+}
+
+.animated-grid {
+  background-color: white;
+  background-image: linear-gradient(rgba(0,0,0,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation: gridMove 2s linear infinite;
+}
+
+
+
 
 
